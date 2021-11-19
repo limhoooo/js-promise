@@ -1,6 +1,6 @@
 ### 요구사항
 
-▪ Promise.all() 
+▪ Promise.all() // 구현완료
 ▪ Promise.allSettled()
 ▪ Promise.any()
 ▪ Promise.race()

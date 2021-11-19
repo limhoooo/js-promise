@@ -20,17 +20,31 @@ class _Promise {
             );
     }
 
-    static all(arr) {
-        // const arrFFF = [];
-        // arr.forEach(item => {
-        //     if (item instanceof _Promise) {
-        //         item.then((res) => arrFFF.push(res))
-        //         console.log(item.valueFnc());
-        //     } else {
-        //         arrFFF.push(item)
-        //     }
-        // });
-        // console.log(arrFFF);
+    all(iterable) {
+        // 예외처리
+        if (!iterable || iterable.length === 0) return this.resolve([]);
+        return new _Promise((resolve, reject) => {
+
+            const result = iterable.map(() => ({ state: Status.PENDING, value: undefined }));
+
+            iterable.forEach((iter, idx) => {
+                // 프로미스가 아닐시
+                if (iter instanceof _Promise === false) {
+                    result[idx] = { state: Status.FULFILLED, value: iter };
+                    const isDone = !result.some(v => v.state === Status.PENDING);
+                    if (isDone) resolve(result.map(v => v.value));
+                    return;
+                }
+
+                iter.then(value => {
+                    result[idx] = { state: Status.FULFILLED, value };
+                    const isDone = !result.some(v => v.state === Status.PENDING);
+                    if (isDone) resolve(result.map(v => v.value));
+                }).catch(err => {
+                    reject(err)
+                });
+            });
+        });
     }
     allSettled() {
 
@@ -141,3 +155,27 @@ class _Promise {
         }
     }
 }
+
+/**
+ * TEST CASE
+ *
+ */
+
+function a(msg) {
+    return new _Promise((res, rej) => {
+        setTimeout(() => {
+            res(msg)
+        }, 500);
+    })
+}
+
+a('a')
+    .then(res => { console.log(res); return a('b') })
+    .then(res => { console.log(res); return a('c') })
+    .then(console.log)
+
+
+const test = new _Promise();
+test.all(['hi', a('3'), a('2')])
+    .then(values => console.log(values))
+
