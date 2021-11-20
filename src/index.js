@@ -21,14 +21,12 @@ class _Promise {
     }
 
     all(iterable) {
-        // 예외처리
         if (!iterable || iterable.length === 0) return this.resolve([]);
         return new _Promise((resolve, reject) => {
 
             const result = iterable.map(() => ({ state: Status.PENDING, value: undefined }));
 
             iterable.forEach((iter, idx) => {
-                // 프로미스가 아닐시
                 if (iter instanceof _Promise === false) {
                     result[idx] = { state: Status.FULFILLED, value: iter };
                     const isDone = !result.some(v => v.state === Status.PENDING);
@@ -157,7 +155,7 @@ class _Promise {
 }
 
 /**
- * TEST CASE
+ ** TEST CASE
  *
  */
 
