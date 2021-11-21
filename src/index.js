@@ -55,12 +55,9 @@ class _Promise {
     }
 
     resolve(value) {
-        // state 가 pending 일때
         if (this.state === Status.PENDING) {
-            // state = FULFILLED 로 변경
             this.state = Status.FULFILLED;
             this.value = value;
-            // onFinallyCallbacks 에 들어있는 callback들 함수 실행
             this.onFinallyCallbacks.forEach((callback) => callback());
             if (this.onFulfilledCallbacks.length !== 0) {
                 this.onFulfilledCallbacks.forEach((callback) => callback(value));
@@ -86,7 +83,6 @@ class _Promise {
     then(callback) {
         this.child = new _Promise((resolve, reject) => {
             if (this.state === Status.PENDING) {
-                // 받아온 callback 함수 push
                 this.onFulfilledCallbacks.push(() => {
                     this.handleCallback(callback, resolve, reject);
                 });
@@ -159,21 +155,21 @@ class _Promise {
  *
  */
 
-function a(msg) {
-    return new _Promise((res, rej) => {
-        setTimeout(() => {
-            res(msg)
-        }, 500);
-    })
-}
+// function a(msg) {
+//     return new _Promise((res, rej) => {
+//         setTimeout(() => {
+//             res(msg)
+//         }, 500);
+//     })
+// }
 
-a('a')
-    .then(res => { console.log(res); return a('b') })
-    .then(res => { console.log(res); return a('c') })
-    .then(console.log)
+// a('a')
+//     .then(res => { console.log(res); return a('b') })
+//     .then(res => { console.log(res); return a('c') })
+//     .then(console.log)
 
 
-const test = new _Promise();
-test.all(['hi', a('3'), a('2')])
-    .then(values => console.log(values))
+// const test = new _Promise();
+// test.all(['hi', a('3'), a('2')])
+//     .then(values => console.log(values))
 
